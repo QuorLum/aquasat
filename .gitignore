@@ -1,0 +1,79 @@
+# ============================================================================
+# AquaSat — .gitignore
+# Strict: No tokens, keys, caches, or model weights
+# ============================================================================
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# ---------- Virtual Environments ----------
+venv/
+.venv/
+env/
+.env
+*.env
+
+# ---------- Google Earth Engine Credentials ----------
+.config/earthengine/
+credentials
+**/earthengine/**
+*.json.bak
+
+# ---------- API Keys & Secrets ----------
+*.key
+*.pem
+*.secret
+secrets/
+.secrets/
+
+# ---------- Model Weights (large binaries) ----------
+*.pt
+*.pth
+*.bin
+*.onnx
+*.h5
+*.hdf5
+*.safetensors
+*.ckpt
+models/*.pt
+models/*.bin
+models/*.pth
+
+# ---------- Output Artifacts ----------
+output/
+*.tif
+*.npy
+*.geojson
+
+# ---------- IDE & OS ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- Logs ----------
+*.log
+progress.log
+
+# ---------- Miscellaneous ----------
+.agents/
+.gemini/
+
+# ---------- Explicitly ALLOW screenshots ----------
+!screenshots/
+!screenshots/**
