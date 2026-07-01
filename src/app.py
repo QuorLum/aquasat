@@ -33,7 +33,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
-# Custom CSS — dark, high-tech aesthetic
+# Custom CSS — Clean layout
 # ---------------------------------------------------------------------------
 st.markdown(
     """
@@ -42,63 +42,6 @@ st.markdown(
 
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
-    }
-
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
-        border-right: 1px solid #21262d;
-    }
-    section[data-testid="stSidebar"] .stMarkdown h1,
-    section[data-testid="stSidebar"] .stMarkdown h2,
-    section[data-testid="stSidebar"] .stMarkdown h3 {
-        color: #58a6ff;
-    }
-
-    /* Metric cards */
-    div[data-testid="stMetric"] {
-        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-        border: 1px solid #30363d;
-        border-radius: 12px;
-        padding: 16px;
-    }
-    div[data-testid="stMetric"] label {
-        color: #8b949e !important;
-    }
-    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
-        color: #58a6ff !important;
-        font-weight: 700;
-    }
-
-    /* Status banners */
-    .status-banner {
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        margin-bottom: 12px;
-        text-align: center;
-    }
-    .status-ok {
-        background: linear-gradient(90deg, #0d4429, #1a5c38);
-        color: #3fb950;
-        border: 1px solid #238636;
-    }
-    .status-warn {
-        background: linear-gradient(90deg, #4a2d0a, #5c3a12);
-        color: #d29922;
-        border: 1px solid #9e6a03;
-    }
-    .status-crit {
-        background: linear-gradient(90deg, #4a0d0d, #5c1212);
-        color: #f85149;
-        border: 1px solid #da3633;
-    }
-
-    /* Map container */
-    .map-container {
-        border: 1px solid #30363d;
-        border-radius: 12px;
-        overflow: hidden;
     }
 
     /* Legend chips */
@@ -114,6 +57,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -152,10 +96,11 @@ def _build_folium_map(grid: np.ndarray, coords: list, color_map: dict, title: st
 
     m = folium.Map(
         location=[center_lat, center_lon],
-        zoom_start=12,
+        zoom_start=14,
         tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         attr="Esri World Imagery",
     )
+
 
     # Build RGBA image from grid
     h, w = grid.shape
@@ -207,25 +152,25 @@ with st.sidebar:
     st.caption("Precision Irrigation Advisory System")
     st.divider()
 
-    st.markdown("### Region of Interest")
-    col_a, col_b = st.columns(2)
-    with col_a:
-        roi_min_lon = st.number_input("Min Lon", value=GeospatialConfig.ROI_COORDINATES[0], format="%.2f")
-        roi_min_lat = st.number_input("Min Lat", value=GeospatialConfig.ROI_COORDINATES[1], format="%.2f")
-    with col_b:
-        roi_max_lon = st.number_input("Max Lon", value=GeospatialConfig.ROI_COORDINATES[2], format="%.2f")
-        roi_max_lat = st.number_input("Max Lat", value=GeospatialConfig.ROI_COORDINATES[3], format="%.2f")
+    with st.expander("🌐 Geographic Coordinates"):
+        col_a, col_b = st.columns(2)
+        with col_a:
+            roi_min_lon = st.number_input("Min Lon", value=GeospatialConfig.ROI_COORDINATES[0], format="%.2f")
+            roi_min_lat = st.number_input("Min Lat", value=GeospatialConfig.ROI_COORDINATES[1], format="%.2f")
+        with col_b:
+            roi_max_lon = st.number_input("Max Lon", value=GeospatialConfig.ROI_COORDINATES[2], format="%.2f")
+            roi_max_lat = st.number_input("Max Lat", value=GeospatialConfig.ROI_COORDINATES[3], format="%.2f")
 
-    st.divider()
-    st.markdown("### Pipeline Controls")
-    target_date = st.date_input("Forecast Date", value=None)
-    use_fallback = st.checkbox("Use Conv3D Fallback Encoder", value=True, help="Skip Prithvi-100M download; use local Conv3D encoder.")
+    with st.expander("⚙️ Pipeline Settings"):
+        target_date = st.date_input("Forecast Date", value=None)
+        use_fallback = st.checkbox("Use Conv3D Fallback Encoder", value=True, help="Skip Prithvi-100M download; use local Conv3D encoder.")
 
     st.divider()
     run_slow = st.button("🚀 Run Full Pipeline", use_container_width=True, type="primary")
     run_fast_only = st.button("⚡ Run Fast Track Only", use_container_width=True, disabled=st.session_state.pipeline_ran is None)
 
     st.divider()
+
     st.markdown(
         "<div style='color:#8b949e;font-size:0.75rem;text-align:center;'>"
         "Powered by NASA/IBM Prithvi-100M<br>"
@@ -372,11 +317,12 @@ critical_pct = sum(dist.get(k, 0) for k in [4, 5]) / max(total_active, 1) * 100
 moderate_pct = sum(dist.get(k, 0) for k in [2, 3]) / max(total_active, 1) * 100
 
 if critical_pct > 10:
-    st.markdown('<div class="status-banner status-crit">⚠️ CRITICAL — Significant irrigation deficit detected across the command area</div>', unsafe_allow_html=True)
+    st.error("⚠️ **CRITICAL** — Significant irrigation deficit detected across the command area")
 elif moderate_pct > 20:
-    st.markdown('<div class="status-banner status-warn">⚡ MODERATE STRESS — Targeted irrigation recommended in tail-end zones</div>', unsafe_allow_html=True)
+    st.warning("⚡ **MODERATE STRESS** — Targeted irrigation recommended in tail-end zones")
 else:
-    st.markdown('<div class="status-banner status-ok">✅ OPTIMAL — Crop moisture levels are within safe thresholds</div>', unsafe_allow_html=True)
+    st.success("✅ **OPTIMAL** — Crop moisture levels are within safe thresholds")
+
 
 # ---- Map Tabs ----
 tab_advisory, tab_crop, tab_stress = st.tabs(["🗺️ Irrigation Advisory", "🌾 Crop Classification", "💧 Moisture Stress"])
@@ -443,14 +389,14 @@ with tab_stress:
 
 # ---- Advisory Distribution Table ----
 st.divider()
-st.markdown("#### 📊 Advisory Distribution")
-dist_data = []
-for code, (label, color) in ADVISORY_LABELS.items():
-    count = dist.get(code, 0)
-    pct = count / (advisory.shape[0] * advisory.shape[1]) * 100
-    dist_data.append({"Advisory": label, "Pixels": count, "Coverage (%)": round(pct, 2)})
+with st.expander("📊 Detailed Statistics & Advisory Distribution"):
+    dist_data = []
+    for code, (label, color) in ADVISORY_LABELS.items():
+        count = dist.get(code, 0)
+        pct = count / (advisory.shape[0] * advisory.shape[1]) * 100
+        dist_data.append({"Advisory": label, "Pixels": count, "Coverage (%)": round(pct, 2)})
+    st.dataframe(dist_data, use_container_width=True, hide_index=True)
 
-st.dataframe(dist_data, use_container_width=True, hide_index=True)
 
 # Footer
 st.divider()
