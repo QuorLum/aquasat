@@ -153,7 +153,7 @@ The Streamlit web dashboard provides:
 
 ## 🎨 Showcase Outputs
 
-Static visual representations of pixel-level pipeline outputs generated from live Sentinel-2 and Sentinel-1 data are stored in the [sample_outputs/](file:///d:/MY%20Projects/antigravity/Kaggle%20Project/sample_outputs) directory:
+Static visual representations of pixel-level pipeline outputs generated from live Sentinel-2 and Sentinel-1 data are stored in the [sample_outputs/](sample_outputs/) directory:
 
 ### 🌾 Crop Classification Map
 Pixel-level classification boundaries matching the satellite basemap terrain (rivers, roads, and fields):
@@ -163,7 +163,7 @@ Pixel-level classification boundaries matching the satellite basemap terrain (ri
 Pixel-level advisories calculated by combining moisture stress and irrigation masks:
 ![Irrigation Advisory Map](sample_outputs/sample_advisory_map_visual.png)
 
-- **Sample GeoTIFF File**: [sample_advisory_map.tif](file:///d:/MY%20Projects/antigravity/Kaggle%20Project/sample_outputs/sample_advisory_map.tif) — Georeferenced (EPSG:4326) advisory map ready for GIS ingestion (QGIS/ArcGIS).
+- **Sample GeoTIFF File**: [sample_advisory_map.tif](sample_outputs/sample_advisory_map.tif) — Georeferenced (EPSG:4326) advisory map ready for GIS ingestion (QGIS/ArcGIS).
 
 ---
 
