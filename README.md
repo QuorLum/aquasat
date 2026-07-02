@@ -122,7 +122,17 @@ Lightweight daily loop that combines cached neural embeddings with physics-based
 - A downstream adapter head for joint crop classification + stage regression
 - A **Conv3D fallback encoder** for offline / GPU-free environments
 
+> [!NOTE]
+> **Model Weight Execution & Fallback Mechanism:**
+> By default, the system operates in **Conv3D Fallback Mode** (`use_fallback=True` in `slow_track.py` and the dashboard) to bypass heavy downloads of foundation weights and function in CPU-only/offline developer environments out-of-the-box.
+>
+> To activate the live `Prithvi-100M` model:
+> 1. Download the pre-trained weights file `Prithvi_100M.pt` from the official [Hugging Face repository](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M/tree/main).
+> 2. Create the `models/` directory in the root and place the weights file inside: `models/Prithvi_100M.pt`.
+> 3. Disable the fallback flag inside `src/slow_track.py` or the dashboard sidebar settings (`use_fallback=False`).
+
 ---
+
 
 ## Dashboard
 
@@ -140,6 +150,23 @@ The Streamlit web dashboard provides:
 - **Advisory Distribution Table** — Pixel counts and coverage percentages
 
 ---
+
+## 🎨 Showcase Outputs
+
+Static visual representations of pixel-level pipeline outputs generated from live Sentinel-2 and Sentinel-1 data are stored in the [sample_outputs/](file:///d:/MY%20Projects/antigravity/Kaggle%20Project/sample_outputs) directory:
+
+### 🌾 Crop Classification Map
+Pixel-level classification boundaries matching the satellite basemap terrain (rivers, roads, and fields):
+![Crop Classification Map](sample_outputs/sample_crop_map_visual.png)
+
+### 🗺️ Precision Irrigation Advisory Map
+Pixel-level advisories calculated by combining moisture stress and irrigation masks:
+![Irrigation Advisory Map](sample_outputs/sample_advisory_map_visual.png)
+
+- **Sample GeoTIFF File**: [sample_advisory_map.tif](file:///d:/MY%20Projects/antigravity/Kaggle%20Project/sample_outputs/sample_advisory_map.tif) — Georeferenced (EPSG:4326) advisory map ready for GIS ingestion (QGIS/ArcGIS).
+
+---
+
 
 ## Irrigation Advisory Codes
 
@@ -182,11 +209,23 @@ The Streamlit web dashboard provides:
 
 ### Installation
 
+1. **Clone and install runtime dependencies:**
 ```bash
 git clone https://github.com/QuorLum/aquasat.git
 cd aquasat
 pip install -r requirements.txt
 ```
+
+2. **Install developer/testing dependencies (optional):**
+```bash
+pip install -r requirements-dev.txt
+```
+
+> [!NOTE]
+> **Environment Pinning & Tested Versions:**
+> This repository is fully tested and pinned against:
+> - `torch==2.12.1+cpu`
+> - `transformers==5.12.1`
 
 ### Earth Engine Authentication
 
@@ -205,6 +244,28 @@ ee.Initialize(project="your-gcp-project-id")
 python tests/test_pipeline.py
 ```
 
+#### Expected Test Console Output:
+```text
+[Config] Initializing Earth Engine project: kaggle-project-499515
+[Config] Earth Engine successfully initialized.
+[GEE API] Earth Engine initialized successfully.
+[E2E Test] Starting Geospatial Architecture End-to-End Test...
+[E2E Test] Sampling ROI Chunk coordinates: [84.5, 25.8, 84.6, 25.9]
+[GEE API] Timestep 0 (2025-06-01 to 2025-06-16) downloaded successfully.
+[GEE API] Timestep 1 (2025-06-16 to 2025-07-01) downloaded successfully.
+...
+[E2E Test] Running cloud gap filling and radar-anchored interpolation...
+[E2E Test] Gap filling completed. Shape verified.
+[E2E Test] Running Slow Track crop classification and stage tracking...
+[Slow Track] Completed. Classification maps generated using Conv3D Fallback.
+[E2E Test] Slow Track inference validated.
+[E2E Test] Weather Fetched (Status: success). Temp Max: 33.7C, Rain: 0.3mm.
+[E2E Test] Fast Track execution validated.
+[E2E Test] Generating pixel-level irrigation advisories...
+[Advisory Exporter] Successfully exported GeoTIFF map to output/test_advisory_map.tif
+[E2E Test] ALL INTEGRATION TESTS PASSED SUCCESSFULLY.
+```
+
 ### Launch the Dashboard
 
 ```bash
@@ -212,6 +273,7 @@ streamlit run src/app.py
 ```
 
 ---
+
 
 ## Study Area
 
@@ -261,10 +323,17 @@ aquasat/
 ├── tests/
 │   └── test_pipeline.py       # End-to-end integration test
 ├── screenshots/
-│   └── ui_dashboard.png       # Dashboard screenshot for README
+│   ├── ui_dashboard.png       # Crop tab dashboard screenshot
+│   └── ui_advisory.png        # Advisory tab dashboard screenshot
+├── sample_outputs/            # Showcase outputs (TIF, PNG, NumPy)
+│   ├── sample_advisory_map.tif
+│   ├── sample_advisory_map_visual.png
+│   ├── sample_crop_map.npy
+│   └── sample_crop_map_visual.png
 ├── models/                    # Model weights (gitignored)
 ├── output/                    # Generated GeoTIFFs (gitignored)
 ├── requirements.txt
+├── requirements-dev.txt
 ├── .gitignore
 └── README.md
 ```

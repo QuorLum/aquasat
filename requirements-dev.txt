@@ -1,0 +1,8 @@
+# Development and Testing Dependencies
+pytest>=7.0.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Screenshot automation tools
+playwright>=1.40.0
+Pillow>=10.0.0

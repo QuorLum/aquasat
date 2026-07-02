@@ -74,6 +74,9 @@ progress.log
 .agents/
 .gemini/
 
-# ---------- Explicitly ALLOW screenshots ----------
+# ---------- Explicitly ALLOW screenshots and sample outputs ----------
 !screenshots/
 !screenshots/**
+!sample_outputs/
+!sample_outputs/**
+
